@@ -1,13 +1,69 @@
 import tkinter as tk
-from tkinter import filedialog
+from tkinter import filedialog, messagebox
+import numpy as np
 import pandas as pd
 import sqlite3
-import xlrd
 import xlwt
 
 
 def select_file(title="Select a file"):
     return filedialog.askopenfilename(title=title, filetypes=[("Excel files", "*.xls")])
+
+
+def convert_dtype(value):
+    if isinstance(value, np.generic):
+        return value.item()
+    return value
+
+
+def combine_workbooks_with_xlwt(target_workbook, new_sheet_data, new_sheet_name, output_name):
+    with pd.ExcelFile(target_workbook, engine='xlrd') as xls:
+        sheet_names = xls.sheet_names
+
+        book = xlwt.Workbook(encoding='utf-8')
+
+        # Write each sheet from the original workbook to the new workbook
+        for sheet in sheet_names:
+            data = pd.read_excel(xls, sheet_name=sheet, engine='xlrd')
+
+            # Add sheet to workbook
+            ws = book.add_sheet(sheet)
+
+            # Write headers
+            for col_idx, col in enumerate(data.columns):
+                ws.write(0, col_idx, col)
+
+            # Write data
+            for row_idx, index in enumerate(data.index):
+                for col_idx, col in enumerate(data.columns):
+                    value = data.at[index, col]
+
+                    # Convert numpy data types to native Python types
+                    value = convert_dtype(value)
+
+                    if not pd.isna(value):
+                        ws.write(row_idx + 1, col_idx, value)
+
+        # Add the new sheet data to the new workbook
+        ws = book.add_sheet(new_sheet_name)
+
+        # Write headers for new sheet
+        for col_idx, col in enumerate(new_sheet_data.columns):
+            ws.write(0, col_idx, col)
+
+        # Write data for new sheet
+        for row_idx, index in enumerate(new_sheet_data.index):
+            for col_idx, col in enumerate(new_sheet_data.columns):
+                value = new_sheet_data.at[index, col]
+
+                # Convert numpy data types to native Python types
+                value = convert_dtype(value)
+
+                if not pd.isna(value):
+                    ws.write(row_idx + 1, col_idx, value)
+
+        # Save the new workbook
+        book.save(output_name)
 
 
 def compare_neotech():
@@ -29,9 +85,6 @@ def compare_neotech():
     last_week_data.columns = last_week_data.columns.str.upper().str.strip()
     current_week_data.columns = current_week_data.columns.str.upper().str.strip()
 
-    print("Last week columns:", last_week_data.columns)
-    print("Current week columns:", current_week_data.columns)
-
     # If 'PARTNUM' column not present in either dataframe, raise an error
     if 'PARTNUM' not in last_week_data.columns or 'PARTNUM' not in current_week_data.columns:
         raise ValueError("PartNum column not found in one of the files after adjustments.")
@@ -43,56 +96,54 @@ def compare_neotech():
     # Filter last week's data
     removed_from_prev = last_week_data[~last_week_data['PARTNUM'].isin(current_week_data['PARTNUM'])]
 
-    # Create or connect to an SQLite database
+    # Create or connect to an SQLite database (this step is kept from your original code, modify if needed)
     db_conn = sqlite3.connect('neotech_data.db')
-
-    # Write data to SQLite database
     removed_from_prev.to_sql('removed_from_prev', db_conn, if_exists='replace', index=False)
 
-    # Create a new workbook using xlwt
-    book = xlwt.Workbook(encoding='utf-8')
-    sheet = book.add_sheet('Removed from Prev File')
+    # Ask the user to select the workbook into which the new sheet will be added
+    target_workbook = select_file("Choose the workbook where you want to add the 'Removed from Prev File' sheet")
+    if not target_workbook:
+        print("No workbook selected to add the sheet.")
+        return
 
-    # Write the column headers
-    for col_idx, col_name in enumerate(removed_from_prev.columns):
-        sheet.write(0, col_idx, col_name)
-
-    # Write the data rows
-    for row_idx, row in enumerate(removed_from_prev.values, start=1):
-        for col_idx, value in enumerate(row):
-            sheet.write(row_idx, col_idx, value)
-
-    # Save the Excel file in .xls format
-    result_file = filedialog.asksaveasfilename(defaultextension=".xls", filetypes=[("Excel files", "*.xls")])
-    if result_file:
-        book.save(result_file)
-        print("File saved successfully:", result_file)
-    else:
+    # Let user specify the output name for the combined workbook
+    output_name = filedialog.asksaveasfilename(title="Save the combined workbook", defaultextension=".xls",
+                                               filetypes=[("Excel files", "*.xls")])
+    if not output_name:
         print("File save canceled.")
+        return
 
+    # Combine workbooks using the new method
+    combine_workbooks_with_xlwt(target_workbook, removed_from_prev, "Removed From Prev File", output_name)
+
+    print("Sheet 'Removed From Prev File' added successfully to", output_name)
     print("Process complete.")
+    # Show success message
+    messagebox.showinfo("Congrats You're A Genius!", "Success Final Workbook Saved")
 
 
 # Create the GUI window
 window = tk.Tk()
 
 # Set the window geometry to a larger size
-window.geometry("1200x730")
+window.geometry("1700x500")
 
 # Add a title label
 title_label = tk.Label(window, text="Comparing Files For Neotech",
                        font=("Microsoft YaHei", 28, "bold", "underline"), foreground="red")
 title_label.grid(row=0, column=0, pady=20)
 
-# # Add instructions label
-# instructions_label = tk.Label(window,
-#                               text="Instructions:\n"
-#                                    "To identify missing IPNs between the last and current RAW BOND files and add the \n"
-#                                    "'Item_Type_Changed_To' and 'Sourced_Type_Changed_To' columns, follow these steps:\n"
-#                                    "1. Select the Last RAW BOND Creation File.\n"
-#                                    "2. Select the Current RAW BOND Creation File.",
-#                               font=("Microsoft YaHei", 18))
-# instructions_label.grid(row=1, column=0, pady=10)
+# Add instructions label
+instructions_label = tk.Label(window,
+                              text="Instructions:\n"
+                                   "1. Click 'Compare NeoTech Files'.\n"
+                                   "2. Select the file from last week (from your previous NeoTech contract).\n"
+                                   "3. Choose the most recent NeoTech contract file.\n"
+                                   "4. Select where you'd like to save the combined workbook with the 'Removed From Prev File' sheet added.\n"
+                                   "5. The combined workbook will then be saved, and the 'Removed From Prev File' sheet will be added to the chosen location.",
+                              font=("Microsoft YaHei", 18))
+instructions_label.grid(row=1, column=0, pady=10)
+
 
 # Create a frame for the first button
 button_frame1 = tk.Frame(window)
