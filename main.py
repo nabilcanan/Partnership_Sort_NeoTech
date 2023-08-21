@@ -126,7 +126,7 @@ def compare_neotech():
 window = tk.Tk()
 
 # Set the window geometry to a larger size
-window.geometry("1700x500")
+window.geometry("1200x500")
 
 # Add a title label
 title_label = tk.Label(window, text="Comparing Files For Neotech",
@@ -136,14 +136,12 @@ title_label.grid(row=0, column=0, pady=20)
 # Add instructions label
 instructions_label = tk.Label(window,
                               text="Instructions:\n"
-                                   "1. Click 'Compare NeoTech Files'.\n"
-                                   "2. Select the file from last week (from your previous NeoTech contract).\n"
-                                   "3. Choose the most recent NeoTech contract file.\n"
-                                   "4. Select where you'd like to save the combined workbook with the 'Removed From Prev File' sheet added.\n"
-                                   "5. The combined workbook will then be saved, and the 'Removed From Prev File' sheet will be added to the chosen location.",
+                                   "1. Select your previous NeoTech Contract File.\n"
+                                   "2. Choose the most recent NeoTech contract File.\n"
+                                   "3. Choose the most recent NeoTech contract File, this is where you're adding the sheet. (Step 2)\n"
+                                   "4. Finally choose where you'd like to save your final workbook\n",
                               font=("Microsoft YaHei", 18))
 instructions_label.grid(row=1, column=0, pady=10)
-
 
 # Create a frame for the first button
 button_frame1 = tk.Frame(window)
