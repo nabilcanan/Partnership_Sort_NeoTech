@@ -16,7 +16,7 @@ def convert_dtype(value):
     return value
 
 
-def combine_workbooks_with_xlwt(target_workbook, new_sheet_data, new_sheet_name, output_name):
+def combine_workbooks_with_xlwt(target_workbook, new_sheets_data, output_name):
     with pd.ExcelFile(target_workbook, engine='xlrd') as xls:
         sheet_names = xls.sheet_names
 
@@ -28,42 +28,32 @@ def combine_workbooks_with_xlwt(target_workbook, new_sheet_data, new_sheet_name,
 
             # Add sheet to workbook
             ws = book.add_sheet(sheet)
+            write_to_excel_sheet(data, ws)
 
-            # Write headers
-            for col_idx, col in enumerate(data.columns):
-                ws.write(0, col_idx, col)
-
-            # Write data
-            for row_idx, index in enumerate(data.index):
-                for col_idx, col in enumerate(data.columns):
-                    value = data.at[index, col]
-
-                    # Convert numpy data types to native Python types
-                    value = convert_dtype(value)
-
-                    if not pd.isna(value):
-                        ws.write(row_idx + 1, col_idx, value)
-
-        # Add the new sheet data to the new workbook
-        ws = book.add_sheet(new_sheet_name)
-
-        # Write headers for new sheet
-        for col_idx, col in enumerate(new_sheet_data.columns):
-            ws.write(0, col_idx, col)
-
-        # Write data for new sheet
-        for row_idx, index in enumerate(new_sheet_data.index):
-            for col_idx, col in enumerate(new_sheet_data.columns):
-                value = new_sheet_data.at[index, col]
-
-                # Convert numpy data types to native Python types
-                value = convert_dtype(value)
-
-                if not pd.isna(value):
-                    ws.write(row_idx + 1, col_idx, value)
+        # Add the new sheets data to the new workbook
+        for sheet_name, sheet_data in new_sheets_data.items():
+            ws = book.add_sheet(sheet_name)
+            write_to_excel_sheet(sheet_data, ws)
 
         # Save the new workbook
         book.save(output_name)
+
+
+def write_to_excel_sheet(data, ws):
+    # Write headers
+    for col_idx, col in enumerate(data.columns):
+        ws.write(0, col_idx, col)
+
+    # Write data
+    for row_idx, index in enumerate(data.index):
+        for col_idx, col in enumerate(data.columns):
+            value = data.at[index, col]
+
+            # Convert numpy data types to native Python types
+            value = convert_dtype(value)
+
+            if not pd.isna(value):
+                ws.write(row_idx + 1, col_idx, value)
 
 
 def compare_neotech():
@@ -93,17 +83,27 @@ def compare_neotech():
     last_week_data['PARTNUM'] = last_week_data['PARTNUM'].astype(str).str.strip()
     current_week_data['PARTNUM'] = current_week_data['PARTNUM'].astype(str).str.strip()
 
-    # Filter last week's data
+    # Remove duplicates only from last_week_data to ensure we do not add any extra rows to current_week_data
+    last_week_data.drop_duplicates(subset='PARTNUM', inplace=True)
+
+    # Subset the data to merge from last week's data
+    columns_to_merge = ['PARTNUM', 'PSOFT PART', 'PSID CT', 'QUOTED MFG', 'QUOTED PART', 'PART CLASS']
+    data_to_merge = last_week_data[columns_to_merge]
+
+    # Merge the subsetted columns from last week's data into current week's data
+    merged_data = pd.merge(current_week_data, data_to_merge, on='PARTNUM', how='left')
+
+    # Filter out rows that were removed from the previous week's data
     removed_from_prev = last_week_data[~last_week_data['PARTNUM'].isin(current_week_data['PARTNUM'])]
 
     # Create or connect to an SQLite database (this step is kept from your original code, modify if needed)
     db_conn = sqlite3.connect('neotech_data.db')
     removed_from_prev.to_sql('removed_from_prev', db_conn, if_exists='replace', index=False)
 
-    # Ask the user to select the workbook into which the new sheet will be added
-    target_workbook = select_file("Choose the workbook where you want to add the 'Removed from Prev File' sheet")
+    # Ask the user to select the workbook into which the new sheets will be added
+    target_workbook = select_file("Choose the workbook where you want to add the new sheets")
     if not target_workbook:
-        print("No workbook selected to add the sheet.")
+        print("No workbook selected to add the sheets.")
         return
 
     # Let user specify the output name for the combined workbook
@@ -113,13 +113,20 @@ def compare_neotech():
         print("File save canceled.")
         return
 
-    # Combine workbooks using the new method
-    combine_workbooks_with_xlwt(target_workbook, removed_from_prev, "Removed From Prev File", output_name)
+    # Create a dictionary of sheets to add to the target workbook
+    new_sheets_data = {
+        "Full File": merged_data,
+        "Removed From Prev File": removed_from_prev
+    }
 
-    print("Sheet 'Removed From Prev File' added successfully to", output_name)
+    combine_workbooks_with_xlwt(target_workbook, new_sheets_data, output_name)
+
+    print("Sheets 'Full File' and 'Removed From Prev File' added successfully to", output_name)
     print("Process complete.")
     # Show success message
-    messagebox.showinfo("Congrats You're A Genius!", "Success Final Workbook Saved")
+    messagebox.showinfo("Congrats You're So Smart!", "Success! Final Workbook Saved")
+
+
 
 
 # Create the GUI window
