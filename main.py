@@ -84,6 +84,7 @@ def compare_neotech():
     current_week_data['PARTNUM'] = current_week_data['PARTNUM'].astype(str).str.strip()
 
     # Remove duplicates only from last_week_data to ensure we do not add any extra rows to current_week_data
+    # Removing line statement did not help the partnum being brought in as duplicates
     last_week_data.drop_duplicates(subset='PARTNUM', inplace=True)
 
     # Subset the data to merge from last week's data
