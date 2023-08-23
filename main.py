@@ -127,8 +127,6 @@ def compare_neotech():
     messagebox.showinfo("Congrats You're So Smart!", "Success! Final Workbook Saved")
 
 
-
-
 # Create the GUI window
 window = tk.Tk()
 
