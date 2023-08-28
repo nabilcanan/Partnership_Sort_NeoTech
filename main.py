@@ -18,6 +18,7 @@ def convert_dtype(value):
 
 def combine_workbooks_with_xlwt(target_workbook, new_sheets_data, output_name):
     with pd.ExcelFile(target_workbook, engine='xlrd') as xls:
+
         sheet_names = xls.sheet_names
 
         book = xlwt.Workbook(encoding='utf-8')
@@ -40,9 +41,24 @@ def combine_workbooks_with_xlwt(target_workbook, new_sheets_data, output_name):
 
 
 def write_to_excel_sheet(data, ws):
+    wrapped_style = xlwt.easyxf('align: wrap on')  # Style to wrap text
+
+    # HEADER_COLORS dictionary should be updated to use the correct color codes for `xlwt`.
+    HEADER_COLORS = {
+        'PSOFT PART_y': 0x0D,  # yellow
+        'PSID CT_y': 0x0D,  # yellow
+        'QUOTED MFG_y': 0x0D,  # yellow
+        'QUOTED PART_y': 0x0D,  # yellow
+        'PART CLASS_y': 0x0D  # yellow
+    }
+
     # Write headers
     for col_idx, col in enumerate(data.columns):
-        ws.write(0, col_idx, col)
+        if col in HEADER_COLORS:
+            header_style = xlwt.easyxf('pattern: pattern solid, fore_colour %s; align: wrap on' % HEADER_COLORS[col])
+            ws.write(0, col_idx, col, header_style)
+        else:
+            ws.write(0, col_idx, col, wrapped_style)
 
     # Write data
     for row_idx, index in enumerate(data.index):
@@ -84,7 +100,8 @@ def compare_neotech():
     current_week_data['PARTNUM'] = current_week_data['PARTNUM'].astype(str).str.strip()
 
     # Remove duplicates only from last_week_data to ensure we do not add any extra rows to current_week_data
-    # Removing line statement did not help the partnum being brought in as duplicates
+    # Removing line statement did not help the partnum being brought in as duplicates did not add to the function we
+    # are working with currently
     last_week_data.drop_duplicates(subset='PARTNUM', inplace=True)
 
     # Subset the data to merge from last week's data
@@ -93,6 +110,10 @@ def compare_neotech():
 
     # Merge the subsetted columns from last week's data into current week's data
     merged_data = pd.merge(current_week_data, data_to_merge, on='PARTNUM', how='left')
+
+    # Drop the unwanted columns
+    columns_to_drop = ['PSOFT PART_x', 'PSID CT_x', 'QUOTED MFG_x', 'QUOTED PART_x', 'PART CLASS_x']
+    merged_data = merged_data.drop(columns=columns_to_drop)
 
     # Filter out rows that were removed from the previous week's data
     removed_from_prev = last_week_data[~last_week_data['PARTNUM'].isin(current_week_data['PARTNUM'])]
