@@ -19,3 +19,14 @@
     - Now that I have the columns I need in the latest NeoTech file I can choose the latest one to merge the files into
 
     - Basically all we need is to setup 8.18 the same way 8.04 is setup 
+
+    - Now all we need now that 8.18 is setup is to vlookup over those 4 columns that she has and we can run our program 
+
+    - Scratch this, now 8.18 is updated in my final file.... the 8.18 one
+
+    - We can now run the 9.01 file, and the 8.18 file and we get our desired function, we get all the columns Vlookuped 
+    we get our removed from prev file sheet, we get the duplicates removed 
+
+    - Run and double check logic to ensure we are producing the correct data 
+
+    - Need to add the ability to bring over formulas that were implemented into our original excel file 

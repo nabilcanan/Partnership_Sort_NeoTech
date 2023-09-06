@@ -14,7 +14,7 @@ def format_headers_in_excel(filename):
     # Load the workbook
     workbook = load_workbook(filename)
 
-    headers_to_color = ['PSOFT PART.1', 'PSID CT_y', 'QUOTED MFG_y', 'QUOTED PART_y', 'PART CLASS_y', 'AML CPN_MFGID', 'NAME', 'AML CPN_MFGNUM',
+    headers_to_color = ['PSOFT PART', 'PSID CT', 'QUOTED MFG', 'QUOTED PART', 'PART CLASS', 'AML CPN_MFGID', 'NAME', 'AML CPN_MFGNUM',
                         'AML CPN_MFGPARTNUM', 'LIFECYCLE STATUS']
     color_list = ["fffa9e", "fffa9e", "fffa9e", "fffa9e", "fffa9e", "f3f800", "f3f800", "f3f800", "f3f800", "f3f800"]
     header_color_mapping = dict(zip(headers_to_color, color_list))
@@ -87,7 +87,7 @@ def compare_neotech():
     unique_data = current_week_data.drop_duplicates(subset='PARTNUM', keep='first')
 
     # Merge data from prev_week_dupes_removed into unique_data for specified columns
-    columns_to_merge = ['PARTNUM', 'PSOFT PART.1', 'PSID CT', 'QUOTED MFG', 'QUOTED PART', 'PART CLASS']
+    columns_to_merge = ['PARTNUM', 'PSOFT PART', 'PSID CT', 'QUOTED MFG', 'QUOTED PART', 'PART CLASS']
     unique_data = unique_data.merge(prev_week_dupes_removed[columns_to_merge], on='PARTNUM', how='left')
 
     # # Columns to drop, we don't want these columns because they are already created in our existing workbook and,
