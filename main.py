@@ -90,11 +90,11 @@ def compare_neotech():
     columns_to_merge = ['PARTNUM', 'PSOFT PART.1', 'PSID CT', 'QUOTED MFG', 'QUOTED PART', 'PART CLASS']
     unique_data = unique_data.merge(prev_week_dupes_removed[columns_to_merge], on='PARTNUM', how='left')
 
-    # Columns to drop, we don't want these columns because they are already created in our existing workbook and,
-    # We will create new columns that we VLOOKUP with our final file, we don't need these columns anymore
-    columns_to_drop_x = ['PSOFT PART', 'PSID CT_x', 'QUOTED MFG_x', 'QUOTED PART_x', 'PART CLASS_x', 'UNNAMED: 40']
+    # # Columns to drop, we don't want these columns because they are already created in our existing workbook and,
+    # # We will create new columns that we VLOOKUP with our final file, we don't need these columns anymore
+    # columns_to_drop_x = ['PSOFT PART', 'PSID CT_x', 'QUOTED MFG_x', 'QUOTED PART_x', 'PART CLASS_x', 'UNNAMED: 40']
 
-    unique_data.drop(columns=columns_to_drop_x, inplace=True)
+    # unique_data.drop(columns=columns_to_drop_x, inplace=True)
 
     # PartNums present in the last week's file but missing in the "Full File Without Dupes"
     removed_from_prev_data = last_week_data[~last_week_data['PARTNUM'].isin(unique_data['PARTNUM'])]
