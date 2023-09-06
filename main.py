@@ -33,7 +33,7 @@ def format_headers_in_excel(filename):
 
     # Loop through all sheets in the workbook
     for sheet in workbook.worksheets:
-        for cell in sheet[1]:  # Assuming headers are in the first row
+        for cell in sheet[1]:  # Headers are in the first row
             cell.alignment = align_wrap
             # Color the specified headers in the "Full File Without Dupes" sheet
             if sheet.title == 'Full File Without Dupes':
