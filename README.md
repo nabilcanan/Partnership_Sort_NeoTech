@@ -30,3 +30,7 @@
     - Run and double check logic to ensure we are producing the correct data 
 
     - Need to add the ability to bring over formulas that were implemented into our original excel file 
+    
+    - Change Full File Without Dupes - Dupes Removed
+
+    - Add a column into the final product called Contract Change that checks the Base Unit Price changes, increaces, decreases, new or no change 
