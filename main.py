@@ -75,11 +75,11 @@ def compare_neotech():
         print("Last week's file not selected!")
         return
 
-    last_week_data = pd.read_excel(last_week_file, sheet_name='Full File', engine='xlrd')
+    last_week_data = pd.read_excel(last_week_file, sheet_name='Full Original File', engine='xlrd')
     last_week_data.columns = last_week_data.columns.str.upper().str.strip()  # Convert last_week_data columns too
 
     # Read the 'Dupes Removed' sheet for merging
-    prev_week_dupes_removed = pd.read_excel(last_week_file, sheet_name='Dupes Removed', engine='xlrd')
+    prev_week_dupes_removed = pd.read_excel(last_week_file, sheet_name='Full File Without Dupes', engine='xlrd')
     prev_week_dupes_removed.columns = prev_week_dupes_removed.columns.str.upper().str.strip()
     print(prev_week_dupes_removed.columns)
 
