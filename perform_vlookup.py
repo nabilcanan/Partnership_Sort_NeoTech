@@ -1,5 +1,4 @@
 from tkinter import filedialog, messagebox
-
 import pandas as pd
 
 
@@ -16,7 +15,8 @@ def perform_vlookup():
         messagebox.showerror("Error", "VLOOKUP data source file not selected!")
         return
 
-    # Ask the user to select the target file where the 'Dupes Removed' sheet is located and where the VLOOKUP needs to be performed
+    # Ask the user to select the target file where the 'Dupes Removed' sheet is located and where the VLOOKUP needs
+    # to be performed
     target_file = select_file("Select the file where you need to perform VLOOKUP (contains 'Dupes Removed' sheet)")
 
     # Check if a target file is selected

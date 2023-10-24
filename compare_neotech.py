@@ -1,5 +1,7 @@
 # import tkinter as tk
 from tkinter import filedialog, messagebox
+
+import numpy as np
 import pandas as pd
 
 
@@ -43,6 +45,20 @@ def compare_neotech():
     # Identify 'PartNum' values from the previous week that are not in the current week
     removed_from_prev_data = prev_week_dupes_removed[
         ~prev_week_dupes_removed['PARTNUM'].isin(current_week_dupes_removed['PARTNUM'])]
+
+    # Merge to get the 'MINORDERQTY' from the previous week data into the current week data
+    # take current week data and look for dupes removed sheet difference to make the new adjustment
+    current_week_dupes_removed = pd.merge(current_week_dupes_removed,
+                                          prev_week_dupes_removed[['PARTNUM', 'MINORDERQTY']],
+                                          on='PARTNUM', how='left', suffixes=('', '_Last_Week'))
+
+    # Rename the merged column to 'LAST WEEK MOQ'
+    current_week_dupes_removed.rename(columns={'MINORDERQTY_Last_Week': 'LAST WEEK MOQ'}, inplace=True)
+
+    # Populate 'MOQ Changed From' column this is the column where we are bringing our new data that we need
+    condition_moq_change = current_week_dupes_removed['MINORDERQTY'] != current_week_dupes_removed['LAST WEEK MOQ']
+    current_week_dupes_removed['MOQ Changed From'] = np.where(condition_moq_change,
+                                                              current_week_dupes_removed['LAST WEEK MOQ'], np.nan)
 
     # Save all DataFrames to the current week's file
     with pd.ExcelWriter(current_week_file, engine='xlsxwriter') as writer:

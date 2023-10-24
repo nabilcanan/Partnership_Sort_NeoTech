@@ -96,7 +96,7 @@ button_frame2 = tk.Frame(window)
 button_frame2.grid(row=3, column=0, pady=10)
 
 readme_button = tk.Button(button_frame1, text='Open README', command=open_readme_link,
-                          font=("Microsoft YaHei", 20, "bold"), bg="blue", fg="white")
+                          font=("Microsoft YaHei", 20, "bold"), bg="orange", fg="white")
 readme_button.pack(fill='both')
 
 # Configure the grid to expand
