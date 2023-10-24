@@ -46,19 +46,28 @@ def compare_neotech():
     removed_from_prev_data = prev_week_dupes_removed[
         ~prev_week_dupes_removed['PARTNUM'].isin(current_week_dupes_removed['PARTNUM'])]
 
-    # Merge to get the 'MINORDERQTY' from the previous week data into the current week data
-    # take current week data and look for dupes removed sheet difference to make the new adjustment
+    # Merge on 'PARTNUM' to get the 'MINORDERQTY' and 'BaseUnitPrice' from the previous week data
     current_week_dupes_removed = pd.merge(current_week_dupes_removed,
-                                          prev_week_dupes_removed[['PARTNUM', 'MINORDERQTY']],
+                                          prev_week_dupes_removed[['PARTNUM', 'MINORDERQTY', 'BASEUNITPRICE']],
                                           on='PARTNUM', how='left', suffixes=('', '_Last_Week'))
 
     # Rename the merged column to 'LAST WEEK MOQ'
     current_week_dupes_removed.rename(columns={'MINORDERQTY_Last_Week': 'LAST WEEK MOQ'}, inplace=True)
 
-    # Populate 'MOQ Changed From' column this is the column where we are bringing our new data that we need
+    # Populate 'MOQ Changed From' column
     condition_moq_change = current_week_dupes_removed['MINORDERQTY'] != current_week_dupes_removed['LAST WEEK MOQ']
     current_week_dupes_removed['MOQ Changed From'] = np.where(condition_moq_change,
                                                               current_week_dupes_removed['LAST WEEK MOQ'], np.nan)
+
+    # Create 'Contract Change' column based on 'BaseUnitPrice' comparison
+    conditions = [
+        (current_week_dupes_removed['BASEUNITPRICE'] > current_week_dupes_removed['BASEUNITPRICE_Last_Week']),
+        (current_week_dupes_removed['BASEUNITPRICE'] < current_week_dupes_removed['BASEUNITPRICE_Last_Week']),
+        (current_week_dupes_removed['BASEUNITPRICE_Last_Week'].isnull())
+    ]
+    choices = ['Price Increased', 'Price Decreased', 'New Item']
+
+    current_week_dupes_removed['Contract Change'] = np.select(conditions, choices, default='No Change')
 
     # Save all DataFrames to the current week's file
     with pd.ExcelWriter(current_week_file, engine='xlsxwriter') as writer:
@@ -67,8 +76,6 @@ def compare_neotech():
         removed_from_prev_data.to_excel(writer, sheet_name='Removed from prev file', index=False)
 
         workbook = writer.book
-
-        # Define format for wrapped text
         wrap_format = workbook.add_format({'text_wrap': True})
 
         for sheet_name in ["Original Data", "Dupes Removed"]:
