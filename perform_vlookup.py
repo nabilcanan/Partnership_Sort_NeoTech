@@ -28,7 +28,7 @@ def perform_vlookup():
     lookup_data = pd.read_excel(lookup_file)
     target_data = pd.read_excel(target_file, sheet_name='Dupes Removed')
     original_data = pd.read_excel(target_file, sheet_name='Original Data')
-    removed_data = pd.read_excel(target_file, sheet_name='Removed from prev file')
+    removed_data = pd.read_excel(target_file, sheet_name='Lost Items')
 
     # Rename 'PartNum' column in lookup_data to 'PARTNUM' for consistency
     lookup_data = lookup_data.rename(columns={'PartNum': 'PARTNUM'})
@@ -46,7 +46,7 @@ def perform_vlookup():
     with pd.ExcelWriter(target_file, engine='xlsxwriter') as writer:
         original_data.to_excel(writer, sheet_name='Original Data', index=False)
         merged_data.to_excel(writer, sheet_name='Dupes Removed', index=False)
-        removed_data.to_excel(writer, sheet_name='Removed from prev file', index=False)
+        removed_data.to_excel(writer, sheet_name='Lost Items', index=False)
 
         # Add formatting to sheets
         workbook = writer.book

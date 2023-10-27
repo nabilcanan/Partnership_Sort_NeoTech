@@ -15,6 +15,7 @@ def format_headers_in_excel(filename):
                         'AML CPN_MFGNUM',
                         'AML CPN_MFGPARTNUM', 'LIFECYCLE STATUS']
     color_list = ["fffa9e", "fffa9e", "fffa9e", "fffa9e", "fffa9e", "f3f800", "f3f800", "f3f800", "f3f800", "f3f800"]
+
     header_color_mapping = dict(zip(headers_to_color, color_list))
 
     general_headers_to_color = ['COMPANY', 'PLANT', 'SITE NAME', 'PARTNUM', 'BUYERID', 'IUM', 'PUM', 'NCNR FLAG',

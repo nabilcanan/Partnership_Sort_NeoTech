@@ -43,7 +43,7 @@ def compare_neotech():
         prev_week_dupes_removed = prev_week_data.drop_duplicates(subset='PARTNUM', keep='first')
 
     # Identify 'PartNum' values from the previous week that are not in the current week
-    removed_from_prev_data = prev_week_dupes_removed[
+    lost_items = prev_week_dupes_removed[
         ~prev_week_dupes_removed['PARTNUM'].isin(current_week_dupes_removed['PARTNUM'])]
 
     # Merge on 'PARTNUM' to get the 'MINORDERQTY' and 'BaseUnitPrice' from the previous week data
@@ -66,19 +66,18 @@ def compare_neotech():
         (current_week_dupes_removed['BASEUNITPRICE_Last_Week'].isnull())
     ]
     choices = ['Price Increased', 'Price Decreased', 'New Item']
-
     current_week_dupes_removed['Contract Change'] = np.select(conditions, choices, default='No Change')
 
     # Save all DataFrames to the current week's file
     with pd.ExcelWriter(current_week_file, engine='xlsxwriter') as writer:
         current_week_data.to_excel(writer, sheet_name="Original Data", index=False)
         current_week_dupes_removed.to_excel(writer, sheet_name="Dupes Removed", index=False)
-        removed_from_prev_data.to_excel(writer, sheet_name='Removed from prev file', index=False)
+        lost_items.to_excel(writer, sheet_name='Lost Items', index=False)
 
         workbook = writer.book
         wrap_format = workbook.add_format({'text_wrap': True})
 
-        for sheet_name in ["Original Data", "Dupes Removed"]:
+        for sheet_name in ["Original Data", "Dupes Removed", "Lost Items"]:
             worksheet = writer.sheets[sheet_name]
 
             # Freeze panes at column J and just below the first row
