@@ -3,6 +3,7 @@ from tkinter import ttk
 import webbrowser
 from compare_neotech import compare_neotech
 from perform_vlookup import perform_vlookup
+from querries import new_function
 
 
 # Create main window
@@ -48,6 +49,10 @@ title_label.pack(pady=(20, 10), padx=20)  # Adjust the padding values as necessa
 description_label = ttk.Label(inner_frame, text="Instructions for NeoTech Contract Files",
                               font=("Rupee", 20, "underline"), background="white")
 description_label.pack(pady=(10, 20), padx=20)  # Adjust the padding values as necessary
+
+run_queries_button = ttk.Button(inner_frame, text="Run Queries", command=new_function, style="TButton")
+run_queries_button.pack(pady=10)
+
 
 description_label1 = ttk.Label(inner_frame, text="For the Comparing Neotech Files button select the files in this "
                                                  "order:\n"
