@@ -1,6 +1,4 @@
-# import tkinter as tk
 from tkinter import filedialog, messagebox
-
 import numpy as np
 import pandas as pd
 
