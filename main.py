@@ -3,6 +3,7 @@ from tkinter import ttk
 import webbrowser
 from compare_neotech import compare_neotech
 from perform_vlookup import perform_vlookup
+from add_query_files import add_excel_files_to_workbook
 from querries import new_function
 
 
@@ -74,6 +75,9 @@ description_label2.pack(pady=(10, 20), padx=20)  # Adjust the padding values as 
 
 vlookup_button = ttk.Button(inner_frame, text='Perform V-lookup', command=perform_vlookup)
 vlookup_button.pack(pady=10)
+
+add_query_button = ttk.Button(inner_frame, text='Add Query Files', command=add_excel_files_to_workbook)
+add_query_button.pack(pady=10)
 
 
 def open_readme_link():
