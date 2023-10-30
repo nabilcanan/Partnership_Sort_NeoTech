@@ -43,6 +43,8 @@ def perform_vlookup():
     merged_data = pd.merge(target_data, lookup_data_filtered, on='PARTNUM', how='left')
 
     # Save the sheets back to the target file in the desired order
+    # This reloads all of our dataframes back into the workbook where we are performing the vlookup
+
     with pd.ExcelWriter(target_file, engine='xlsxwriter') as writer:
         original_data.to_excel(writer, sheet_name='Original Data', index=False)
         merged_data.to_excel(writer, sheet_name='Dupes Removed', index=False)
@@ -60,7 +62,9 @@ def perform_vlookup():
         for sheet_name in ["Original Data", "Dupes Removed"]:
             worksheet = writer.sheets[sheet_name]
 
-            # Freeze panes at column J and just below the first row
+            # Freeze panes at column J and just below the first row, this method worked for the current function
+            # we are working with, need to freeze panes to make keep the formatting together for the next function
+
             worksheet.freeze_panes(1, 10)
 
             # Apply the wrapped format to the header row
