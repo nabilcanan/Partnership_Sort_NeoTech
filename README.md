@@ -1,36 +1,45 @@
-# Partnership_Sort_NeoTech
+## Partnership_Sort_Neotech
+_______________________________________________________________________________________________________________
 
 
-# Currently, we select the latest Neotech file and then the previous one 
+# This program will allow us to perform the following tasks: 
 
-    -We need to fix the issue where we need to check the latest neotechfile 
-    
-    -Ideally, once the process is completed for the last week file we can bring over the new VLOOKUP'ed columns 
-    and bring them over
-    
-    -I need the week of 8.18 contract to have the Dupes Removed Sheet, with the VLOOKUP columns from the 8.04 
-    contract in order to bring them into the next contract being 9.01
+- We can run the queries we need for our Neotech customer
+- We will be able to compare the previous Neotech Contract to the latest Neotech contract file and cross-reference the PARTNUM column from one week to the next to identify if there are any missing items from one week to the next
+- Perform a Vlookup from any previous Contract if not done for the previous week file, so for instance we are comparing the 9.29 file but pulling in the data from the 8.04 file 
+- Additionally, we are adding the latest awards, backlog, sales history, vpc, and snd files to the latest neotech contract file, such as we did for Creation Contract
 
-    - We need to make it so no matter what the Dupes Removed or in our case Full Fle Without Dupes is created to then use the rest of our functions accordingly
-    
-    - Currently I can rename the 9.01 first sheet to 'Sheet1' to mock the 9.18 one, then delete the Dupes Removed, once I did this I can run my program on it and I dont need to drop those columns commented out in my code 
-      I dont need to drop these anymore because in our latest file those columns aren't there anymore 
+_______________________________________________________________________________________________________________
 
-    - Now that I have the columns I need in the latest NeoTech file I can choose the latest one to merge the files into
+# Functionality For Buttons
+_______________________________________________________________________________________________________________
 
-    - Basically all we need is to setup 8.18 the same way 8.04 is setup 
+- For the **Run Queries** button follow the instructions bellow: 
 
-    - Now all we need now that 8.18 is setup is to vlookup over those 4 columns that she has and we can run our program 
+1. Just enter your peoplesoft information and do not move your mouse until all 5 queries have been opened on your system
+2. Then save them accordingly into whichever folder you decide 
+3. Once saved close all the files to sort them using the next set of buttons
 
-    - Scratch this, now 8.18 is updated in my final file.... the 8.18 one
+_______________________________________________________________________________________________________________
 
-    - We can now run the 9.01 file, and the 8.18 file and we get our desired function, we get all the columns Vlookuped 
-    we get our removed from prev file sheet, we get the duplicates removed 
+- For the **Compare Contracts** button select the files in the order below: 
 
-    - Run and double check logic to ensure we are producing the correct data 
+1. Select the latest weeks file
+2. Select the previous contract file
 
-    - Need to add the ability to bring over formulas that were implemented into our original excel file 
-    
-    - Change Full File Without Dupes - Dupes Removed
+Example for order to select: 
 
-    - Add a column into the final product called Contract Change that checks the Base Unit Price changes, increaces, decreases, new or no change 
+1. NeoTech Contracts 9.29.23.xls 
+- THEN!
+2. NeoTech Contracts 9.15.23.xls
+
+_______________________________________________________________________________________________________________
+
+- For the **Perform Vlookup** button select the files in the order below: 
+
+1. Select the previous Neotech contract where we have our data that we want to send over to the target file
+- For instance the last time we VLOOKUP'ed data from one file to the next was 8.24 that's where we have those 4 columns brought in
+2. Then select the target file, this is the same one we have the 'Lost Items' sheet and the newly created Dupes Removed sheet 
+3. Once the process is complete it will ask you where you'd like to save your final file
+
+_______________________________________________________________________________________________________________

@@ -7,7 +7,7 @@ from add_query_files import add_excel_files_to_workbook
 from querries import new_function
 
 
-# Create main window
+# Create main  for gui
 window = tk.Tk()
 window.title("Comparing NeoTech Contract Files")
 window.configure(bg="white")
@@ -43,8 +43,8 @@ style = ttk.Style()
 style.configure("TButton", font=("Rupee", 16, "bold"), width=30, height=2, background="white")
 style.map("TButton", foreground=[('active', 'red')], background=[('active', 'blue')])
 
-title_label = ttk.Label(inner_frame, text="Welcome Partnership Member!",
-                        font=("Rupee", 32, "underline"), background="white", foreground="#103d81")
+title_label = ttk.Label(inner_frame, text="Welcome Partnership Team!",
+                        font=("Rupee", 28, "underline"), background="white", foreground="#103d81")
 title_label.pack(pady=(20, 10), padx=20)  # Adjust the padding values as necessary
 
 description_label = ttk.Label(inner_frame, text="Instructions for NeoTech Contract Files",
